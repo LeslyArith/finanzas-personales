@@ -4,6 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+echo "[0/6] Levantando servicios locales requeridos"
+docker compose -f compose.yaml up -d --build app db_dev >/dev/null
+
 echo "[1/6] Validando compose"
 docker compose -f compose.yaml config >/dev/null
 

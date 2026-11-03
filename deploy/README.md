@@ -32,6 +32,25 @@ El script valida:
 - `health` web
 - smoke local sobre `db_dev`
 
+## CI en GitHub
+
+Se agregó configuración en GitHub Actions:
+
+- [.github/workflows/ci.yml](.github/workflows/ci.yml)
+   - Corre en `pull_request` y en `push` a `main`.
+   - Ejecuta `./deploy/release-check.sh`.
+
+- [.github/workflows/manual-release.yml](.github/workflows/manual-release.yml)
+   - Se ejecuta manualmente (`workflow_dispatch`).
+   - Recibe `release_tag`.
+   - Corre checklist, genera paquete, verifica y publica artifact descargable.
+
+### Cómo usar el release manual en GitHub
+
+1. Crear/push de tag (`v0.x.x`).
+2. En GitHub: Actions → `manual-release` → Run workflow.
+3. Capturar el artifact generado y usarlo para despliegue manual en Hostinger.
+
 ## Flujo Git recomendado
 
 1. `git checkout -b feat/<cambio>`

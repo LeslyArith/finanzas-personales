@@ -1,0 +1,47 @@
+name: manual-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag (ej. v0.1.0)"
+        required: true
+        default: "v0.1.0"
+
+jobs:
+  package-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout release tag
+        run: |
+          git fetch --tags --force
+          git checkout "${{ github.event.inputs.release_tag }}"
+
+      - name: Ensure scripts executable
+        run: chmod +x deploy/*.sh scripts/*.sh
+
+      - name: Run release checklist
+        run: ./deploy/release-check.sh
+
+      - name: Build package
+        run: ./deploy/package.sh
+
+      - name: Locate latest package
+        id: pkg
+        run: |
+          file_path=$(ls -1t deploy/runtime/finanzas-personales-*.tar.gz | head -n1)
+          echo "file_path=$file_path" >> "$GITHUB_OUTPUT"
+
+      - name: Verify package
+        run: python3 ./deploy/verify.py "${{ steps.pkg.outputs.file_path }}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: finanzas-personales-${{ github.event.inputs.release_tag }}
+          path: ${{ steps.pkg.outputs.file_path }}
+          if-no-files-found: error
