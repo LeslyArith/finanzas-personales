@@ -1,0 +1,6 @@
+001|00_catalogos.sql|Base de catálogos
+002|01_esquema.sql|Esquema fase 1
+003|02_nucleo.sql|Triggers y procedimientos
+004|04_migrar_v1_a_catalogos.sql|Migración desde v1 instalada (manual, no automática)
+005|03_pruebas.sql|Pruebas núcleo (solo base de pruebas)
+006|05_pruebas_catalogos.sql|Pruebas catálogo (solo base de pruebas)

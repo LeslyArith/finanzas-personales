@@ -1,0 +1,78 @@
+name: finanzas-personales
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    env_file:
+      - .env
+    environment:
+      APP_NAME: ${APP_NAME:-Finanzas Personales}
+      APP_DB_HOST: ${APP_DB_HOST:-db_dev}
+      APP_DB_PORT: ${APP_DB_PORT:-3306}
+      APP_DB_NAME: ${APP_DB_NAME:-finanzas_personales_dev}
+      APP_DB_USER: ${APP_DB_USER:-finanzas_dev}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:-finanzas_dev_pass}
+      APP_DB_SSL_MODE: ${APP_DB_SSL_MODE:-preferred}
+      APP_DB_SSL_CA: ${APP_DB_SSL_CA:-}
+      APP_DB_SSL_CERT: ${APP_DB_SSL_CERT:-}
+      APP_DB_SSL_KEY: ${APP_DB_SSL_KEY:-}
+      APP_DB_SSL_VERIFY_SERVER_CERT: ${APP_DB_SSL_VERIFY_SERVER_CERT:-1}
+      APP_DB_ALLOW_INSECURE_REMOTE: ${APP_DB_ALLOW_INSECURE_REMOTE:-0}
+    ports:
+      - "127.0.0.1:${FP_APP_PORT:-8082}:80"
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - fp_net
+
+  db_dev:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: ${FP_DB_DEV_NAME:-finanzas_personales_dev}
+      MYSQL_USER: ${FP_DB_DEV_USER:-finanzas_dev}
+      MYSQL_PASSWORD: ${FP_DB_DEV_PASSWORD:-finanzas_dev_pass}
+      MYSQL_ROOT_PASSWORD: ${FP_DB_DEV_ROOT_PASSWORD:-finanzas_dev_root_pass}
+    ports:
+      - "127.0.0.1:${FP_DB_DEV_PORT:-3310}:3306"
+    volumes:
+      - fp_mysql_dev_data:/var/lib/mysql
+      - ./database:/workspace/database:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks:
+      - fp_net
+
+  db_test:
+    image: mysql:8.0
+    profiles: ["tests"]
+    environment:
+      MYSQL_DATABASE: ${FP_DB_TEST_NAME:-finanzas_personales_test}
+      MYSQL_USER: ${FP_DB_TEST_USER:-finanzas_test}
+      MYSQL_PASSWORD: ${FP_DB_TEST_PASSWORD:-finanzas_test_pass}
+      MYSQL_ROOT_PASSWORD: ${FP_DB_TEST_ROOT_PASSWORD:-finanzas_test_root_pass}
+    ports:
+      - "127.0.0.1:${FP_DB_TEST_PORT:-3311}:3306"
+    volumes:
+      - ./:/workspace:ro
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks:
+      - fp_net
+
+volumes:
+  fp_mysql_dev_data:
+    name: finanzas_personales_dev_mysql_data
+
+networks:
+  fp_net:
+    name: finanzas_personales_net

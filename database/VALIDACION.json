@@ -1,0 +1,18 @@
+{
+  "version_paquete": 2,
+  "tipo": "revision_estatica",
+  "campos_convertidos": 11,
+  "catalogos": 9,
+  "tablas": 24,
+  "procedimientos": 2,
+  "triggers": 8,
+  "mysql_ejecutado": false,
+  "comprobaciones": [
+    "sin declaraciones ENUM en todos los SQL",
+    "referencias y columnas de claves foraneas consistentes",
+    "todos los campos anteriores convertidos",
+    "CHECK retirados restaurados salvo compatibilidad reemplazada por FK",
+    "roles evaluados por permisos",
+    "archivos de migracion y pruebas incluidos"
+  ]
+}
